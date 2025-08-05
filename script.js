@@ -1,110 +1,85 @@
 const userList = document.getElementById('user-list');
-const modal = document.getElementById('modal');
-const modalContent = document.querySelector(".modal-content");
-const modalBody = document.getElementById('modal-body');
-const modalClose = document.getElementById('modal-close');
-
 const searchInput = document.getElementById('search');
-const genderFilter = document.getElementById('genderFilter');
-const sortOrder = document.getElementById('sortOrder');
-
-let allUsers = [];
+let users = [];
 
 function createUserCard(user) {
   const card = document.createElement('div');
   card.className = 'user-card';
   card.innerHTML = `
-    <img src="${user.picture.large}" alt="User picture" />
+    <img src="${user.picture.large}" alt="Фото" />
     <h3>${user.name.first} ${user.name.last}</h3>
     <p>${user.email}</p>
+    <button class="toggle-btn">▼</button>
+    <div class="user-extra hidden">
+      <p><strong>Телефон:</strong> ${user.phone}</p>
+      <p><strong>Місто:</strong> ${user.location.city}</p>
+      <p><strong>Вік:</strong> ${user.dob.age}</p>
+    </div>
   `;
-  card.addEventListener('click', () => showModal(user, card));
+
+  const toggleBtn = card.querySelector('.toggle-btn');
+  const extraBlock = card.querySelector('.user-extra');
+
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+
+    document.querySelectorAll('.user-extra').forEach(el => {
+      if (el !== extraBlock) {
+        el.classList.add('hidden');
+        el.previousElementSibling?.classList?.remove('open');
+      }
+    });
+
+    extraBlock.classList.toggle('hidden');
+    toggleBtn.classList.toggle('open');
+    toggleBtn.textContent = extraBlock.classList.contains('hidden') ? '▼' : '▲';
+  });
+
   return card;
 }
 
-function showModal(user, card) {
-  const rect = card.getBoundingClientRect();
-
-  modal.classList.remove('hidden');
-  modalContent.style.setProperty('--start-top', `${rect.top}px`);
-  modalContent.style.setProperty('--start-left', `${rect.left}px`);
-  modalContent.style.setProperty('--start-width', `${rect.width}px`);
-  modalContent.style.setProperty('--start-height', `${rect.height}px`);
-
-  modalBody.innerHTML = `
-    <img class="modal-avatar" src="${user.picture.large}" alt="User picture" />
-    <h2>${user.name.first} ${user.name.last}</h2>
-    <p><strong>Gender:</strong> ${user.gender}</p>
-    <p><strong>Email:</strong> ${user.email}</p>
-    <p><strong>Phone:</strong> ${user.phone}</p>
-    <p><strong>City:</strong> ${user.location.city}</p>
-    <p><strong>Age:</strong> ${user.dob.age}</p>
-  `;
-}
-
-modalClose.addEventListener('click', () => {
-  modal.classList.add('hidden');
-});
-
-function renderUsers(users) {
+function renderUsers(data) {
+  if (!userList) return;
   userList.innerHTML = '';
-  users.forEach(user => {
+  data.forEach(user => {
     userList.appendChild(createUserCard(user));
   });
 }
 
-function applyFilters() {
-  const search = searchInput.value.toLowerCase();
-  const gender = genderFilter.value;
-  const order = sortOrder.value;
-
-  let filtered = [...allUsers];
-
-  if (gender) {
-    filtered = filtered.filter(u => u.gender === gender);
-  }
-
-  if (search) {
-    filtered = filtered.filter(u =>
-      u.name.first.toLowerCase().includes(search) ||
-      u.name.last.toLowerCase().includes(search)
-    );
-  }
-
-  filtered.sort((a, b) => {
-    const nameA = a.name.first + ' ' + a.name.last;
-    const nameB = b.name.first + ' ' + b.name.last;
-    return order === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
-  });
-
+function applySearch() {
+  if (!searchInput) return;
+  const value = searchInput.value.toLowerCase();
+  const filtered = users.filter(u =>
+    u.name.first.toLowerCase().includes(value) || u.name.last.toLowerCase().includes(value)
+  );
   renderUsers(filtered);
 }
 
-searchInput.addEventListener('input', applyFilters);
-genderFilter.addEventListener('change', applyFilters);
-sortOrder.addEventListener('change', applyFilters);
+if (searchInput) {
+  searchInput.addEventListener('input', applySearch);
 
-function showSkeletons(count) {
-  userList.innerHTML = '';
-  for (let i = 0; i < count; i++) {
-    const skeleton = document.createElement('div');
-    skeleton.className = 'skeleton';
-    userList.appendChild(skeleton);
-  }
-}
-
-function loadUsers() {
-  showSkeletons(8);
-  fetch('https://randomuser.me/api/?results=20')
+  fetch("https://randomuser.me/api/?results=10")
     .then(res => res.json())
     .then(data => {
-      allUsers = data.results;
-      applyFilters();
-    })
-    .catch(err => {
-      userList.innerHTML = "<p>Failed to load users</p>";
-      console.error(err);
+      users = data.results;
+      renderUsers(users);
     });
 }
 
-loadUsers();
+// Вставка header и footer
+function includeHTML(selector, file) {
+  fetch(file)
+    .then(res => res.text())
+    .then(html => {
+      document.querySelector(selector).innerHTML = html;
+      if (file.includes('footer')) {
+        const yearSpan = document.getElementById('year');
+        if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+      }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  includeHTML("header", "header.html");
+  includeHTML("footer", "footer.html");
+});
