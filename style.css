@@ -5,61 +5,240 @@
 }
 
 body {
-  font-family: sans-serif;
-  background: #f3f3f3;
-  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #e0eafc, #cfdef3);
+  padding: 40px 20px;
+  color: #333;
 }
 
 .container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
+  background: #ffffffcc;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  backdrop-filter: blur(5px);
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  color: #222;
+  font-size: 2.5rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 25px;
+  justify-content: center;
+}
+
+input, select {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #aaa;
+  font-size: 1rem;
+  min-width: 180px;
 }
 
 .user-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 25px;
   justify-content: center;
 }
 
 .user-card {
   background: white;
-  border-radius: 12px;
-  padding: 15px;
-  width: 250px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 14px;
+  padding: 20px;
+  width: 260px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .user-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
 }
 
 .user-card img {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 10px;
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 15px;
+  border: 3px solid #ddd;
 }
 
 .user-card h3 {
-  font-size: 18px;
-  margin-bottom: 5px;
+  font-size: 20px;
+  margin-bottom: 6px;
+  color: #111;
+  text-align: center;
 }
 
 .user-card p {
   font-size: 14px;
-  color: #555;
+  color: #666;
+  text-align: center;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px; right: 18px;
+  font-size: 28px;
+  cursor: pointer;
+  color: #888;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal-content h2 {
+  margin-bottom: 15px;
+  color: #222;
+  text-align: center;
+}
+
+.modal-content p {
+  margin: 8px 0;
+  font-size: 15px;
+  color: #444;
+}
+
+.skeleton {
+  background: linear-gradient(135deg, #eee, #ddd);
+  height: 250px;
+  width: 260px;
+  border-radius: 14px;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
 }
 
 @media (max-width: 600px) {
   .user-card {
     width: 100%;
   }
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  animation: growModal 0.4s ease forwards;
+  transform-origin: top left;
+  --start-top: 0px;
+  --start-left: 0px;
+  --start-width: 260px;
+  --start-height: 250px;
+}
+
+@keyframes growModal {
+  0% {
+    transform: translate(var(--start-left), var(--start-top)) scaleX(calc(var(--start-width) / 420)) scaleY(calc(var(--start-height) / 420));
+    opacity: 0.2;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-avatar {
+  display: block;
+  margin: 0 auto 15px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  object-fit: cover;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 16px;
+  position: absolute;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  animation: growFromCard 0.4s ease forwards;
+  transform-origin: top left;
+  z-index: 1001;
+}
+
+@keyframes growFromCard {
+  0% {
+    top: var(--start-top);
+    left: var(--start-left);
+    width: var(--start-width);
+    height: var(--start-height);
+    opacity: 0.5;
+  }
+  100% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90vw;
+    max-width: 420px;
+    height: auto;
+    opacity: 1;
+  }
+}
+
+.modal-avatar {
+  display: block;
+  margin: 0 auto 15px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  object-fit: cover;
 }

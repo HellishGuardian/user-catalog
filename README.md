@@ -1,15 +1,17 @@
-# User Catalog
+# User Catalog (Advanced)
 
-Simple responsive user catalog using:
+Responsive user catalog with:
 
 - HTML, CSS, JS
 - Fetch API (`randomuser.me`)
-- Basic CSS animations
+- Filters: gender, search, sorting
+- Modal with detailed info
+- Skeleton loader
 - Mobile friendly
 
 ## Demo
 
-Loads 8 random users and displays their profiles in animated cards.
+Loads random users and lets you filter/sort/search.
 
 ## How to run
 
